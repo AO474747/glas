@@ -80,10 +80,21 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeApp() {
     // EmailJS initialisieren
     if (typeof emailjs !== 'undefined') {
-        emailjs.init(EMAILJS_CONFIG.userId);
-        console.log('EmailJS initialisiert');
+        try {
+            emailjs.init(EMAILJS_CONFIG.userId);
+            console.log('EmailJS erfolgreich initialisiert mit User ID:', EMAILJS_CONFIG.userId);
+            
+            // Test der Konfiguration
+            console.log('EmailJS Konfiguration:', {
+                serviceId: EMAILJS_CONFIG.serviceId,
+                templateId: EMAILJS_CONFIG.templateId,
+                userId: EMAILJS_CONFIG.userId
+            });
+        } catch (error) {
+            console.error('Fehler bei EmailJS-Initialisierung:', error);
+        }
     } else {
-        console.error('EmailJS SDK nicht geladen');
+        console.error('EmailJS SDK nicht geladen - prüfen Sie die CDN-Einbindung');
     }
     
     // Datum setzen
@@ -299,7 +310,21 @@ function confirmAndSendEmail() {
         erstellt_am: new Date().toLocaleDateString('de-DE')
     };
     
-    // EmailJS senden
+    // Debug-Informationen
+    console.log('EmailJS Send-Versuch mit:', {
+        serviceId: EMAILJS_CONFIG.serviceId,
+        templateId: EMAILJS_CONFIG.templateId,
+        userId: EMAILJS_CONFIG.userId,
+        templateParams: templateParams
+    });
+    
+    // Prüfen ob EmailJS verfügbar ist
+    if (typeof emailjs === 'undefined') {
+        showStatus('EmailJS ist nicht verfügbar. Bitte laden Sie die Seite neu.', 'error');
+        return;
+    }
+    
+    // EmailJS senden mit verbesserter Fehlerbehandlung
     emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, templateParams)
         .then(function(response) {
             console.log('SUCCESS!', response.status, response.text);
@@ -307,8 +332,23 @@ function confirmAndSendEmail() {
             closeModal();
             resetForm();
         }, function(error) {
-            console.log('FAILED...', error);
-            showStatus('Fehler beim Senden der E-Mail: ' + error.text, 'error');
+            console.error('EmailJS Fehler:', error);
+            console.error('Fehler-Details:', {
+                status: error.status,
+                text: error.text,
+                response: error.response
+            });
+            
+            let errorMessage = 'Fehler beim Senden der E-Mail';
+            if (error.status === 404) {
+                errorMessage = 'EmailJS-Service nicht gefunden. Bitte prüfen Sie die Service-ID.';
+            } else if (error.status === 400) {
+                errorMessage = 'Ungültige Template-Parameter. Bitte prüfen Sie die Template-ID.';
+            } else if (error.text) {
+                errorMessage = 'E-Mail-Fehler: ' + error.text;
+            }
+            
+            showStatus(errorMessage, 'error');
         });
 }
 
