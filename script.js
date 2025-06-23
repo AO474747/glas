@@ -3,7 +3,7 @@
 const EMAILJS_CONFIG = {
     serviceId: 'service_t0x6h2t', // z.B. 'service_abc123'
     templateId: 'template_4yzhd0q', // z.B. 'template_xyz789'
-    userId: 'ia3YBTzlRJq2D9Bgx' // z.B. 'user_def456'
+    userId: 'N-WiC9QPXh158LTC7' // z.B. 'user_def456'
 };
 
 // Preiskonfiguration (€/m²)
