@@ -131,6 +131,12 @@ function setupEventListeners() {
         elements.sendEmail.addEventListener('click', sendEmail);
     }
     
+    // EmailJS Test Button
+    const testEmailJSButton = document.getElementById('testEmailJS');
+    if (testEmailJSButton) {
+        testEmailJSButton.addEventListener('click', testEmailJSConfig);
+    }
+    
     // Modal-Events
     if (elements.confirmSend) {
         elements.confirmSend.addEventListener('click', confirmAndSendEmail);
@@ -397,10 +403,52 @@ function configureEmailJS(serviceId, templateId, userId) {
     }
 }
 
+// EmailJS-Konfiguration testen
+function testEmailJSConfig() {
+    console.log('=== EmailJS Konfiguration Test ===');
+    console.log('Service ID:', EMAILJS_CONFIG.serviceId);
+    console.log('Template ID:', EMAILJS_CONFIG.templateId);
+    console.log('User ID:', EMAILJS_CONFIG.userId);
+    
+    // Test-E-Mail senden
+    const testParams = {
+        to_email: 'test@example.com',
+        to_name: 'Test User',
+        subject: 'EmailJS Test',
+        message: 'Dies ist ein Test der EmailJS-Konfiguration.',
+        spiegel_groesse: '100 × 80 cm',
+        spiegel_typ: 'Standard',
+        randbearbeitung: 'Standard',
+        bohrungen: '0',
+        lieferzeit: 'Standard',
+        gesamtpreis: '45.00',
+        erstellt_am: new Date().toLocaleDateString('de-DE')
+    };
+    
+    console.log('Sende Test-E-Mail...');
+    
+    emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, testParams)
+        .then(function(response) {
+            console.log('✅ EmailJS Test erfolgreich!', response);
+            showStatus('EmailJS-Konfiguration ist korrekt! ✅', 'success');
+        }, function(error) {
+            console.error('❌ EmailJS Test fehlgeschlagen:', error);
+            console.error('Fehler-Status:', error.status);
+            console.error('Fehler-Text:', error.text);
+            
+            if (error.status === 404) {
+                showStatus('❌ Service ID oder Template ID nicht gefunden. Bitte prüfen Sie Ihre EmailJS-Konfiguration.', 'error');
+            } else {
+                showStatus('❌ EmailJS-Fehler: ' + (error.text || 'Unbekannter Fehler'), 'error');
+            }
+        });
+}
+
 // Export für externe Nutzung
 window.SpiegelKonfigurator = {
     configureEmailJS,
     getFormData,
     calculatePrice,
-    updatePreview
+    updatePreview,
+    testEmailJSConfig
 }; 
