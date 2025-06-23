@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiegel-Konfigurator - Angebotsgenerator</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🪞 Spiegel-Konfigurator</h1>
+            <p>Professioneller Angebotsgenerator für Glasereien</p>
+        </header>
+
+        <main>
+            <!-- Konfigurationsbereich -->
+            <section class="config-section">
+                <h2>Spiegel-Konfiguration</h2>
+                
+                <div class="form-group">
+                    <label for="customerName">Kundenname:</label>
+                    <input type="text" id="customerName" placeholder="Max Mustermann" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="customerEmail">E-Mail-Adresse:</label>
+                    <input type="email" id="customerEmail" placeholder="max@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="spiegelGroesse">Spiegelgröße (cm):</label>
+                    <div class="size-inputs">
+                        <input type="number" id="spiegelBreite" placeholder="Breite" min="10" max="300" required>
+                        <span>×</span>
+                        <input type="number" id="spiegelHoehe" placeholder="Höhe" min="10" max="300" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="spiegelTyp">Spiegeltyp:</label>
+                    <select id="spiegelTyp" required>
+                        <option value="">Bitte wählen...</option>
+                        <option value="Standard">Standard-Spiegel</option>
+                        <option value="ESG">ESG-Spiegel (gehärtet)</option>
+                        <option value="VSG">VSG-Spiegel (verbundet)</option>
+                        <option value="Design">Design-Spiegel</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="randbearbeitung">Randbearbeitung:</label>
+                    <select id="randbearbeitung">
+                        <option value="Standard">Standard (geschliffen)</option>
+                        <option value="Poliert">Poliert</option>
+                        <option value="Facettiert">Facettiert</option>
+                        <option value="Keine">Keine Bearbeitung</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="bohrungen">Bohrungen:</label>
+                    <input type="number" id="bohrungen" placeholder="Anzahl Bohrungen" min="0" max="10" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="lieferzeit">Lieferzeit:</label>
+                    <select id="lieferzeit" required>
+                        <option value="Standard">Standard (5-7 Werktage)</option>
+                        <option value="Express">Express (2-3 Werktage)</option>
+                        <option value="Premium">Premium (1-2 Werktage)</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Angebotsvorschau -->
+            <section class="preview-section">
+                <h2>Angebotsvorschau</h2>
+                <div id="angebotsVorschau" class="angebot-preview">
+                    <div class="preview-header">
+                        <h3>Ihr Spiegel-Angebot</h3>
+                        <p class="preview-date"></p>
+                    </div>
+                    <div class="preview-content">
+                        <p>Kunde: <span id="previewKunde">-</span></p>
+                        <p>Spiegel: <span id="previewGroesse">-</span> cm</p>
+                        <p>Typ: <span id="previewTyp">-</span></p>
+                        <p>Randbearbeitung: <span id="previewRand">-</span></p>
+                        <p>Bohrungen: <span id="previewBohrungen">-</span></p>
+                        <p>Lieferzeit: <span id="previewLieferzeit">-</span></p>
+                        <p class="preview-price">Gesamtpreis: <span id="previewPreis">-</span> €</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- E-Mail-Versand -->
+            <section class="email-section">
+                <h2>E-Mail-Versand</h2>
+                
+                <div class="form-group">
+                    <label for="emailBetreff">Betreff:</label>
+                    <input type="text" id="emailBetreff" value="Ihr Spiegel-Angebot - [DATUM]" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="emailNachricht">Nachricht:</label>
+                    <textarea id="emailNachricht" rows="6" placeholder="Ihre Nachricht an den Kunden..."></textarea>
+                </div>
+
+                <div class="email-actions">
+                    <button type="button" id="previewEmail" class="btn btn-secondary">📧 E-Mail-Vorschau</button>
+                    <button type="button" id="sendEmail" class="btn btn-primary">📤 Angebot senden</button>
+                </div>
+
+                <div id="emailStatus" class="status-message"></div>
+            </section>
+        </main>
+
+        <!-- E-Mail-Vorschau Modal -->
+        <div id="emailModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>E-Mail-Vorschau</h3>
+                <div class="email-preview">
+                    <p><strong>An:</strong> <span id="modalTo"></span></p>
+                    <p><strong>Betreff:</strong> <span id="modalSubject"></span></p>
+                    <div id="modalMessage"></div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="confirmSend" class="btn btn-primary">✅ Bestätigen & Senden</button>
+                    <button type="button" id="cancelSend" class="btn btn-secondary">❌ Abbrechen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
