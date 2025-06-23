@@ -33,7 +33,8 @@ exports.handler = async function(event, context) {
       spiegelTyp, 
       groesse, 
       preis, 
-      kundenName, 
+      kundenName,
+      anrede,
       emailType = 'angebot' 
     } = requestData;
 
@@ -48,16 +49,27 @@ exports.handler = async function(event, context) {
       };
     }
 
+    // Anrede für E-Mail bestimmen
+    let emailAnrede = 'Sehr geehrte Damen und Herren';
+    if (anrede && kundenName) {
+      if (anrede === 'Herr') {
+        emailAnrede = `Sehr geehrter Herr ${kundenName}`;
+      } else if (anrede === 'Frau') {
+        emailAnrede = `Sehr geehrte Frau ${kundenName}`;
+      }
+    }
+
     // E-Mail-Typ bestimmen
     let prompt = '';
     if (emailType === 'angebot') {
       prompt = `Erstelle eine professionelle E-Mail für ein Spiegel-Angebot einer Glaserei.
 
-Kunde: ${kundenName}
+Anrede: ${emailAnrede}
 Spiegel: ${spiegelTyp} (${groesse})
 Preis: ${preis} €
 
 Die E-Mail sollte:
+- Mit "${emailAnrede}," beginnen
 - Professionell und freundlich sein
 - Das Angebot klar präsentieren
 - Auf Nachfragen hinweisen
@@ -68,10 +80,12 @@ Antwort nur mit dem E-Mail-Text, ohne zusätzliche Erklärungen.`;
     } else if (emailType === 'vertrieb') {
       prompt = `Erstelle eine überzeugende Vertriebs-E-Mail für einen ${spiegelTyp}-Spiegel.
 
+Anrede: ${emailAnrede}
 Spiegel: ${groesse}
 Preis: ${preis} €
 
 Die E-Mail sollte:
+- Mit "${emailAnrede}," beginnen
 - Überzeugend und verkaufsorientiert sein
 - Vorteile des Spiegels hervorheben
 - Call-to-Action enthalten

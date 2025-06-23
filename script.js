@@ -32,6 +32,7 @@ const LIEFERZEIT_AUFZUSCHLAG = {
 const elements = {
     // Formular-Elemente
     customerName: document.getElementById('customerName'),
+    anrede: document.getElementById('anrede'),
     customerEmail: document.getElementById('customerEmail'),
     spiegelBreite: document.getElementById('spiegelBreite'),
     spiegelHoehe: document.getElementById('spiegelHoehe'),
@@ -110,7 +111,7 @@ function initializeApp() {
 function setupEventListeners() {
     // Formular-Änderungen
     const formElements = [
-        elements.customerName, elements.customerEmail, elements.spiegelBreite,
+        elements.customerName, elements.anrede, elements.customerEmail, elements.spiegelBreite,
         elements.spiegelHoehe, elements.spiegelTyp, elements.randbearbeitung,
         elements.bohrungen, elements.lieferzeit
     ];
@@ -175,7 +176,8 @@ function updatePreview() {
     const preis = calculatePrice(data);
     
     // Vorschau-Elemente aktualisieren
-    elements.previewKunde.textContent = data.customerName || '-';
+    const kundenAnzeige = data.anrede && data.customerName ? `${data.anrede} ${data.customerName}` : (data.customerName || '-');
+    elements.previewKunde.textContent = kundenAnzeige;
     elements.previewGroesse.textContent = data.groesse || '-';
     elements.previewTyp.textContent = data.spiegelTyp || '-';
     elements.previewRand.textContent = data.randbearbeitung || '-';
@@ -188,6 +190,7 @@ function updatePreview() {
 function getFormData() {
     return {
         customerName: elements.customerName.value,
+        anrede: elements.anrede.value,
         customerEmail: elements.customerEmail.value,
         spiegelBreite: parseFloat(elements.spiegelBreite.value) || 0,
         spiegelHoehe: parseFloat(elements.spiegelHoehe.value) || 0,
@@ -216,7 +219,18 @@ function calculatePrice(data) {
 
 // Standard-Nachricht generieren
 function generateDefaultMessage() {
-    return `Sehr geehrte Damen und Herren,
+    const data = getFormData();
+    let anrede = 'Sehr geehrte Damen und Herren';
+    
+    if (data.anrede && data.customerName) {
+        if (data.anrede === 'Herr') {
+            anrede = `Sehr geehrter Herr ${data.customerName}`;
+        } else if (data.anrede === 'Frau') {
+            anrede = `Sehr geehrte Frau ${data.customerName}`;
+        }
+    }
+    
+    return `${anrede},
 
 vielen Dank für Ihr Interesse an unserem Spiegel-Angebot.
 
@@ -281,6 +295,7 @@ function validateForm(data) {
     const errors = [];
     
     if (!data.customerName) errors.push('Kundenname ist erforderlich');
+    if (!data.anrede) errors.push('Anrede ist erforderlich');
     if (!data.customerEmail) errors.push('E-Mail-Adresse ist erforderlich');
     if (!data.spiegelBreite || !data.spiegelHoehe) errors.push('Spiegelgröße ist erforderlich');
     if (!data.spiegelTyp) errors.push('Spiegeltyp ist erforderlich');
@@ -390,6 +405,7 @@ function closeModal() {
 // Formular zurücksetzen
 function resetForm() {
     elements.customerName.value = '';
+    elements.anrede.value = '';
     elements.customerEmail.value = '';
     elements.spiegelBreite.value = '';
     elements.spiegelHoehe.value = '';
@@ -479,6 +495,7 @@ async function generateEmailText(spiegelData, emailType = 'angebot') {
                 groesse: spiegelData.groesse,
                 preis: calculatePrice(spiegelData).toFixed(2),
                 kundenName: spiegelData.customerName,
+                anrede: spiegelData.anrede,
                 emailType: emailType
             })
         });
