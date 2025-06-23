@@ -92,4 +92,19 @@ config.local.js
 settings.local.json
 
 # EmailJS-Konfigurationsdateien (falls separat)
-emailjs-config.js 
+emailjs-config.js
+
+# API Keys und Umgebungsvariablen
+.env
+.env.local
+.env.development
+.env.production
+*.env
+
+# OpenAI API Keys
+openai-key.txt
+api-keys.txt
+secrets.txt
+
+# Netlify
+.netlify/ 

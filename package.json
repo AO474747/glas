@@ -1,0 +1,26 @@
+{
+  "name": "spiegel-konfigurator",
+  "version": "1.0.0",
+  "description": "Professioneller Spiegel-Konfigurator für Glasereien mit EmailJS und OpenAI Integration",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^2.0.0"
+  },
+  "keywords": [
+    "spiegel",
+    "glaserei",
+    "angebot",
+    "emailjs",
+    "openai",
+    "netlify"
+  ],
+  "author": "Spiegel-Konfigurator",
+  "license": "MIT"
+} 

@@ -137,6 +137,17 @@ function setupEventListeners() {
         testEmailJSButton.addEventListener('click', testEmailJSConfig);
     }
     
+    // KI-Buttons
+    const generateAIEmailButton = document.getElementById('generateAIEmail');
+    if (generateAIEmailButton) {
+        generateAIEmailButton.addEventListener('click', generateEmailWithAI);
+    }
+    
+    const generateSalesEmailButton = document.getElementById('generateSalesEmail');
+    if (generateSalesEmailButton) {
+        generateSalesEmailButton.addEventListener('click', generateSalesEmailWithAI);
+    }
+    
     // Modal-Events
     if (elements.confirmSend) {
         elements.confirmSend.addEventListener('click', confirmAndSendEmail);
@@ -451,4 +462,70 @@ window.SpiegelKonfigurator = {
     calculatePrice,
     updatePreview,
     testEmailJSConfig
-}; 
+};
+
+// OpenAI Integration
+async function generateEmailText(spiegelData, emailType = 'angebot') {
+    try {
+        showStatus('Generiere E-Mail-Text mit KI...', 'loading');
+        
+        const response = await fetch('/.netlify/functions/generate-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                spiegelTyp: spiegelData.spiegelTyp,
+                groesse: spiegelData.groesse,
+                preis: calculatePrice(spiegelData).toFixed(2),
+                kundenName: spiegelData.customerName,
+                emailType: emailType
+            })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            showStatus('E-Mail-Text erfolgreich generiert! ✅', 'success');
+            return result.emailText;
+        } else {
+            throw new Error(result.error || 'Unbekannter Fehler');
+        }
+    } catch (error) {
+        console.error('OpenAI API Fehler:', error);
+        showStatus('Fehler bei der Textgenerierung: ' + error.message, 'error');
+        return null;
+    }
+}
+
+// E-Mail-Text mit KI generieren
+async function generateEmailWithAI() {
+    const data = getFormData();
+    
+    if (!validateForm(data)) {
+        return;
+    }
+    
+    const generatedText = await generateEmailText(data, 'angebot');
+    
+    if (generatedText) {
+        elements.emailNachricht.value = generatedText;
+        showEmailPreview();
+    }
+}
+
+// Vertriebs-E-Mail mit KI generieren
+async function generateSalesEmailWithAI() {
+    const data = getFormData();
+    
+    if (!validateForm(data)) {
+        return;
+    }
+    
+    const generatedText = await generateEmailText(data, 'vertrieb');
+    
+    if (generatedText) {
+        elements.emailNachricht.value = generatedText;
+        showEmailPreview();
+    }
+} 
